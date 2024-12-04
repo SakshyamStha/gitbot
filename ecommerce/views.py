@@ -175,12 +175,12 @@ def chatbot_view(request):
     chat_history = request.session.get('chat_history', [])  # Get chat history from the session
     
     if user_message:
-        bot_response = generate_response(user_message, request)  # Pass the 'request' object here
-        # Add the new message and response to the chat history
+        bot_response = generate_response(user_message, request)  
+       
         chat_history.append({'user': user_message, 'bot': bot_response})
         request.session['chat_history'] = chat_history  # Update session with new history
     else:
-        bot_response = "Please enter a message..."
+        bot_response = "Please enter a message"
 
     return JsonResponse({'response': bot_response, 'history': chat_history})  # Return JSON response to the frontend
 

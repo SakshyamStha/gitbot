@@ -12,7 +12,7 @@ from .models import Category
 
 json_file_path = os.path.join(os.path.dirname(__file__), 'data', 'intents.json')
 
-STOPWORDS = {"the", "is","are", "and", "in", "to", "a", "of", "for", "on", "it", "with", "me"}
+STOPWORDS = {"the", "is","are", "and", "any", "in", "to", "a", "of", "for", "on", "it", "with", "me"}
 SUFFIXES = []
 
 def preprocess_text(text):
@@ -212,6 +212,22 @@ def generate_response(user_input,request):
         return response
 
 
+    elif intent == "add_to_cart":
+        product_quantities = extract_product_quantities(user_input)  # Extract product names and quantities
+        response = ""
+        cart = Cart(request)  # Initialize the cart for the session
+
+        for product_name, quantity in product_quantities.items():
+            try:
+                # Normalize product name for database lookup
+                product = Product.objects.get(name__iexact=product_name.replace(" ", "_"))
+                cart.add(product=product, quantity=quantity)  # Add the specified quantity
+                response += f"Successfully added <strong>{quantity} x {product.name.replace('_', ' ')}</strong> to your cart.<br>"
+            except Product.DoesNotExist:
+                response += f"Sorry, we couldn't find a product named <strong>'{product_name.replace('_', ' ')}'</strong>.<br>"
+
+        return response if response else "Please specify a valid product and quantity to add to your cart."
+
        
     
 
@@ -220,7 +236,8 @@ def generate_response(user_input,request):
 
 def extract_product_names(user_input):
     words = preprocess_text(user_input.lower())
-    keywords = ["about", "product", "item", "is", "want", "show", "tell", "have", "details", "info","buy"]
+    keywords = ["about", "product", "item", "is", "want", "show", "tell", "have", "details", "info","buy"
+                ,"add", "put", "place"]
     product_names = []
 
     for keyword in keywords:
@@ -294,18 +311,19 @@ def get_product_by_id(product_id):
 
 def extract_category_name(user_input):
     categories = ["earring", "watch", "ring", "sunglasses", "necklace", "bracelet"]
-    user_input = user_input.lower()
-    threshold = 2
+    user_words = user_input.lower().split() 
 
+    threshold = 2 
     best_match = None
     min_distance = float('inf')
 
-    for category in categories:
-        distance = levenshtein_distance(user_input, category)
-        # If the distance is less than the threshold, we consider it a match
-        if distance < min_distance and distance <= threshold:
-            min_distance = distance
-            best_match = category
+    for word in user_words:
+        for category in categories:
+            distance = levenshtein_distance(word, category)
+            
+            if distance < min_distance and distance <= threshold:
+                min_distance = distance
+                best_match = category
 
     return best_match
 
@@ -325,3 +343,19 @@ def get_products_in_category(category_name):
         return product_details
     else:
         return f"Sorry, we couldn't find any products in the <strong>'{category_name}'</strong> category."
+
+
+
+import re
+def extract_product_quantities(user_input):
+   
+    pattern = r"(\d+)\s+([\w\s]+)(?:,|and|to the cart|$)"
+    matches = re.findall(pattern, user_input, re.IGNORECASE)
+
+    product_quantities = {}
+    for match in matches:
+        quantity, product_name = match
+        product_name = product_name.strip().lower()  # Normalize product name
+        product_quantities[product_name] = int(quantity)
+
+    return product_quantities
