@@ -103,52 +103,27 @@
                     <img src="{% static 'images/4.jpg' %}" alt="Image 1">
                 </figure>
                 <div class="overlay">
-                    <h2>Home>Register</h2>
+                    <h2>Home>U[date User Information</h2>
                 </div>
     </div>
 </header>
 
 
 <div class="container" style="margin-bottom: 40px;">
-    <div class="box-element offset-md-2" style="width: 800px;">
-        <h1 class="text-center">REGISTER</h1>
-        <div class="row"  style="margin-top: 20px;">
+    <div class="box-element offset-md-2" style="width: 800px;margin-top: 10px;">
+        <div  style="margin-top: 10px;">
+            <h1 class="text-center">UPDATE YOUR PROFILE INFORMATION</h1>
+        </div>
+        <div class="row"  style="margin-top: 40px;">
             <div class="col-md-6 offset-md-3">
-                <form method="POST" action="{%url 'register' %}">
+                <form method="POST" action="{%url 'update_info' %}">
                     {% csrf_token %}
     
                     {{form.as_p}}
         
-                    <button type="submit" class="custom-login-button">Register</button>
-    
-                    <!-- <form id="register-form" method="post">
-                        <div class="single-contact-form">
-                            <div class="contact-box name">
-                                <input type="text" name="name" id="name" placeholder="Your Name*" style="width:100%">
-                            </div>
-                            <span class="field_error" id="name_error"></span>
-                        </div>
-                        <div class="single-contact-form">
-                            <div class="contact-box name">
-                                <input type="text" name="email" id="email" placeholder="Your Email*" style="width:100%">
-                            </div>
-                            <span class="field_error" id="email_error"></span>
-                        </div>
-                        <div class="single-contact-form">
-                            <div class="contact-box name">
-                                <input type="text" name="mobile" id="mobile" placeholder="Your Mobile*" style="width:100%">
-                            </div>
-                            <span class="field_error" id="mobile_error"></span>
-                        </div>
-                        <div class="single-contact-form">
-                            <div class="contact-box name">
-                                <input type="password" name="password" id="password" placeholder="Your Password*" style="width:100%">
-                            </div>
-                            <span class="field_error" id="password_error"></span>
-                        </div>
-                        <br><br>
-                        <button type="submit" class="custom-login-button">Register</button>
-                  </form> -->
+                    <button type="submit" class="custom-login-button">Update Profile Information</button>
+                    <br><br>
+                </form>
             </div>
         </div>
     </div>

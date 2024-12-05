@@ -1,15 +1,12 @@
 from django.shortcuts import render,redirect
-from .models import Product,Category
+from .models import Product,Category,Profile
 from django.contrib.auth import authenticate,login,logout
 from django.contrib import messages
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
 from django import forms
-from .forms import SignUpForm,UpdateUserForm,ChangePasswordForm
+from .forms import SignUpForm,UpdateUserForm,ChangePasswordForm,UserInfoForm
 from django.core.paginator import Paginator
-
-
-
 
 
 def home(request):
@@ -29,13 +26,28 @@ def contact(request):
     return render(request,'contact.html',{})
 
 def allproduct(request):
-    products= Product.objects.all()
+    query = request.GET.get('q', '')  
+    products = Product.objects.all()  # Fetch all products initially
     categories=Category.objects.all()
-    paginator =Paginator(products, 4)  # Show 4 products per page
 
-    page_number = request.GET.get('page')  # Get the page number from the query parameters
-    page_obj = paginator.get_page(page_number)  # Get the products for the requested page
-    return render(request,'allproduct.html',{"categories":categories,"products":products,'page_obj': page_obj})
+    if query:
+
+        search_query = query.replace(' ', '_')
+        products = products.filter(name__icontains=search_query) | products.filter(category__name__iexact=query)
+
+    # Add pagination
+    paginator = Paginator(products, 4) 
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    context = {
+        'categories':categories,
+        'products':products,
+        'page_obj': page_obj,
+        'original_query': query,  # Pass the search query back to the template
+    }
+    return render(request, 'allproduct.html', context)
+
 
 
 def login_user(request):
@@ -136,6 +148,7 @@ def update_user(request):
     else:
         messages.success(request,"User must be logged in")
         return redirect('home')
+    
 
 def update_password(request):
     if request.user.is_authenticated:
@@ -162,6 +175,26 @@ def update_password(request):
     else:
         messages.success(request,"User must be logged in")
         return redirect('home')
+    
+
+def update_info(request):
+    if request.user.is_authenticated:
+        current_user=Profile.objects.get(user__id=request.user.id)
+        form= UserInfoForm(request.POST or None, instance=current_user)
+
+        if form.is_valid():
+            form.save()
+ 
+            messages.success(request,"Your informations has been updated!!!")
+            return redirect('home')
+        else:
+            for error in list(form.errors.values()):
+                    messages.error(request,error)
+        return render(request,"update_info.html",{'form':form})
+    else:
+        messages.success(request,"User must be logged in")
+        return redirect('home')
+        
 
 
 

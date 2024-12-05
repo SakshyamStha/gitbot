@@ -16,6 +16,7 @@
           "Hey there",
           "Greetings",
           "Hi there!",
+          "how are you?",
           "Hello, how are you?",
           "Hey, what's new?",
           "Howdy!",
@@ -3593,6 +3594,18 @@
                 "butterfly","butterfly","butterfly","butterfly","butterfly","butterfly","butterfly","butterfly","butterfly","butterfly"
               ]
             },
+            {
+              "tag": "product_search",
+              "patterns": [
+                "balck", "black", "shades", "blck","balck", "black", "shades", "blck","balck", "black", "shades", "blck",
+                "balck", "black", "shades", "blck","balck", "black", "shades", "blck","balck", "black", "shades", "blck",
+                "balck", "black", "shades", "blck","balck", "black", "shades", "blck","balck", "black", "shades", "blck",
+                "balck", "black", "shades", "blck","balck", "black", "shades", "blck","balck", "black", "shades", "blck"
+              ]
+            },
+
+
+            
             {
               "tag": "product_search",
               "patterns": [

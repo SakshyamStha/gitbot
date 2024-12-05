@@ -10,6 +10,32 @@ from cart.cart import Cart
 from .models import Product
 from .models import Category  
 
+import json
+import os
+
+def save_user_input_and_intent(user_input, intent):
+    new_file_path = os.path.join(os.path.dirname(__file__), 'data', 'user_input_intent.json')
+
+    # Check if the file exists and if it contains valid JSON
+    if os.path.exists(new_file_path):
+        try:
+            with open(new_file_path, 'r') as file:
+                data = json.load(file)
+        except json.JSONDecodeError:
+            # If the file is empty or invalid, initialize with an empty structure
+            data = {"intents": []}
+    else:
+        data = {"intents": []}  # Initialize with an empty list if the file doesn't exist
+
+    # Append the new user input, intent, and bot response as a pattern
+    data["intents"].append({
+        "patterns": user_input,
+        "tag": intent,
+    })
+    # Write the updated data back to the file
+    with open(new_file_path, 'w') as file:
+        json.dump(data, file, indent=4)
+
 json_file_path = os.path.join(os.path.dirname(__file__), 'data', 'intents.json')
 
 STOPWORDS = {"the", "is","are", "and", "any", "in", "to", "a", "of", "for", "on", "it", "with", "me"}
@@ -17,7 +43,7 @@ SUFFIXES = []
 
 def preprocess_text(text):
     text = text.lower()
-    text = re.sub(r'[^\w\s]', '', text)  # Remove punctuation
+    text = ''.join([char if char.isalnum() or char.isspace() else '' for char in text])
     tokens = text.split()
     # Remove stopwords and stem words
     return [stem_word(word) for word in tokens if word not in STOPWORDS]
@@ -46,7 +72,22 @@ def levenshtein_distance(str1, str2):
 
     return dp[m][n]
 
-
+def train_naive_bayes_with_user_data():
+    # Load intents from both files
+    with open(json_file_path, 'r') as file:
+        intents = json.load(file)["intents"]
+    
+    user_file_path = os.path.join(os.path.dirname(__file__), 'data', 'user_input_intent.json')
+    with open(user_file_path, 'r') as file:
+        user_data = json.load(file)["intents"]
+    
+    # Add user input patterns to intents
+    for user_input in user_data:
+        # Ensure patterns are a list
+        patterns = [user_input["patterns"]] if isinstance(user_input["patterns"], str) else user_input["patterns"]
+        intents.append({"tag": user_input["tag"], "patterns": patterns})
+    
+    return train_naive_bayes(intents)
 
 def train_naive_bayes(intents):
     word_counts = defaultdict(Counter)
@@ -91,6 +132,9 @@ def generate_response(user_input,request):
     word_counts, intent_counts, total_words, vocab_size = train_naive_bayes(intents)
     intent = classify_intent(user_input, word_counts, intent_counts, total_words, vocab_size)
     print(f"Detected intent: {intent}")
+
+    # Save the user input and detected intent to the new JSON file
+    save_user_input_and_intent(user_input, intent)
 
     # Response based on detected intent
     if intent == "product_search":
@@ -187,7 +231,7 @@ def generate_response(user_input,request):
         return 'To log in, click <a href="/login/">here</a> to access your account.'
 
     elif intent == "account_registration":
-        return 'To register, click <a href="/signup/">here</a> to create an account.'
+        return 'To register, click <a href="/register/">here</a> to create an account.'
     
     elif intent == "view_cart":
         cart = Cart(request)  # Create a cart object using the current request session
@@ -222,7 +266,7 @@ def generate_response(user_input,request):
                 # Normalize product name for database lookup
                 product = Product.objects.get(name__iexact=product_name.replace(" ", "_"))
                 cart.add(product=product, quantity=quantity)  # Add the specified quantity
-                response += f"Successfully added <strong>{quantity} x {product.name.replace('_', ' ')}</strong> to your cart.<br>"
+                response += f"Successfully added <strong>{quantity} x {product.name.replace('_', ' ')}</strong> to your cart.<br>Click to <a href='/cart/'>view</a> your cart"
             except Product.DoesNotExist:
                 response += f"Sorry, we couldn't find a product named <strong>'{product_name.replace('_', ' ')}'</strong>.<br>"
 
@@ -231,7 +275,7 @@ def generate_response(user_input,request):
        
     
 
-    return "I'm not sure how to respond to that."
+    return "I'm not sure how to respond to that.PLease specify what you want."
 
 
 def extract_product_names(user_input):
@@ -296,7 +340,7 @@ def get_product_details(product_name):
         product_details = f"We have: <br> <a href='{product_url}'><strong>{product.name}</strong></a> : Rs.{product.price}.<br>"
         return product_details
     except Product.DoesNotExist:
-        return f"Sorry, we couldn't find a product named <strong>'{product_name.replace('_',' ')}'</strong>."
+        return f"Sorry, we don't have <strong>'{product_name.replace('_',' ')}'</strong> in our stock."
     
 
 
