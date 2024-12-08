@@ -4310,7 +4310,57 @@
           "responses":[
   
           ]
-        }
+        },
+        {
+      
+          "tag": "greeting",
+          "patterns": [
+            "how are you?",
+            "Hello",
+            "yo",
+            "gleam-bot",
+            "gleam",
+            "Hi",
+            "Hey",
+            "Good morning",
+            "Good afternoon",
+            "Good evening",
+            "What's up?",
+            "How's it going?",
+            "Hey there",
+            "Greetings",
+            "Hi there!",
+            "how are you?",
+            "Hello, how are you?",
+            "Hey, what's new?",
+            "Howdy!",
+            "Hello there!",
+            "Hey, how's your day?",
+            "Hiya!",
+            "Good to see you",
+            "How are you doing?",
+            "Hi, what's up?",
+            "Hello, can you help me?",
+            "Hey, how's it going?",
+            "Hello, nice to meet you",
+            "Hi, how can you assist me?",
+            "Hey there, chatbot",
+            "Hi, I hope you're doing well",
+            "Hi, it's nice to talk to you",
+            "Hello! Are you there?",
+            "Hi, just checking in!",
+            "Good day, how can you help me?",
+            "Namaste"
+          ],
+          "responses": [
+            "Hello! How can I assist you today?",
+            "Hi there! How can I help?",
+            "Hey! What can I do for you?",
+            "Hello! What do you need help with today?"
+          ]
+        
+        
+      }
         
           
             

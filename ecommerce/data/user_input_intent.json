@@ -1059,6 +1059,50 @@
         {
             "patterns": "show me shell necklace",
             "tag": "product_search"
+        },
+        {
+            "patterns": "rarrngi",
+            "tag": "category_search"
+        },
+        {
+            "patterns": "earrngi",
+            "tag": "category_search"
+        },
+        {
+            "patterns": "earrngi",
+            "tag": "category_search"
+        },
+        {
+            "patterns": "earrngi",
+            "tag": "category_search"
+        },
+        {
+            "patterns": "?",
+            "tag": "product_search"
+        },
+        {
+            "patterns": "how are you?",
+            "tag": "product_search"
+        },
+        {
+            "patterns": "hi",
+            "tag": "greeting"
+        },
+        {
+            "patterns": "hi?",
+            "tag": "greeting"
+        },
+        {
+            "patterns": "how are you?",
+            "tag": "product_search"
+        },
+        {
+            "patterns": "how are you?",
+            "tag": "product_search"
+        },
+        {
+            "patterns": "how are you?",
+            "tag": "greeting"
         }
     ]
 }
