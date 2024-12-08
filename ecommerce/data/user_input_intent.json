@@ -879,6 +879,186 @@
         {
             "patterns": "beho",
             "tag": "category_search"
+        },
+        {
+            "patterns": "rng",
+            "tag": "category_search"
+        },
+        {
+            "patterns": "rng",
+            "tag": "category_search"
+        },
+        {
+            "patterns": "i want to login",
+            "tag": "account_login"
+        },
+        {
+            "patterns": "i want to create an account",
+            "tag": "account_registration"
+        },
+        {
+            "patterns": "help me",
+            "tag": "help"
+        },
+        {
+            "patterns": "bye",
+            "tag": "farewell"
+        },
+        {
+            "patterns": "hi",
+            "tag": "greeting"
+        },
+        {
+            "patterns": "i want boho",
+            "tag": "account_registration"
+        },
+        {
+            "patterns": "i want boho",
+            "tag": "account_registration"
+        },
+        {
+            "patterns": "i want boho ring",
+            "tag": "product_search"
+        },
+        {
+            "patterns": "boho ring",
+            "tag": "product_search"
+        },
+        {
+            "patterns": "boho ring",
+            "tag": "product_search"
+        },
+        {
+            "patterns": "i want boho ring",
+            "tag": "product_search"
+        },
+        {
+            "patterns": "i want boho ring",
+            "tag": "product_search"
+        },
+        {
+            "patterns": "i want heart pendant",
+            "tag": "product_search"
+        },
+        {
+            "patterns": "heart",
+            "tag": "product_search"
+        },
+        {
+            "patterns": "bro",
+            "tag": "category_search"
+        },
+        {
+            "patterns": "moimoi ",
+            "tag": "category_search"
+        },
+        {
+            "patterns": "momo?",
+            "tag": "category_search"
+        },
+        {
+            "patterns": "gleam-bot?",
+            "tag": "category_search"
+        },
+        {
+            "patterns": "gleam-bot",
+            "tag": "greeting"
+        },
+        {
+            "patterns": "gleam-bot",
+            "tag": "greeting"
+        },
+        {
+            "patterns": "add 3 boho ring, 2 lotus ring",
+            "tag": "add_to_cart"
+        },
+        {
+            "patterns": "add 3 boho ring",
+            "tag": "add_to_cart"
+        },
+        {
+            "patterns": "add 2 boho ring",
+            "tag": "add_to_cart"
+        },
+        {
+            "patterns": "place 7 boho ring in cart",
+            "tag": "add_to_cart"
+        },
+        {
+            "patterns": "place 6 boho ring",
+            "tag": "add_to_cart"
+        },
+        {
+            "patterns": "add 2 vintage watch",
+            "tag": "add_to_cart"
+        },
+        {
+            "patterns": "add 11 lotus ring",
+            "tag": "add_to_cart"
+        },
+        {
+            "patterns": "boho",
+            "tag": "product_search"
+        },
+        {
+            "patterns": "boho",
+            "tag": "product_search"
+        },
+        {
+            "patterns": "i want vancleef",
+            "tag": "account_registration"
+        },
+        {
+            "patterns": "i want brown watch",
+            "tag": "product_search"
+        },
+        {
+            "patterns": "i want brown watch from here",
+            "tag": "clear_cart"
+        },
+        {
+            "patterns": "i want brown watch here",
+            "tag": "product_search"
+        },
+        {
+            "patterns": "i want brown watch handsome me",
+            "tag": "category_search"
+        },
+        {
+            "patterns": "give me brown watch",
+            "tag": "product_search"
+        },
+        {
+            "patterns": "show me brown watch",
+            "tag": "product_search"
+        },
+        {
+            "patterns": "vintage",
+            "tag": "product_search"
+        },
+        {
+            "patterns": "i want brown watch",
+            "tag": "product_search"
+        },
+        {
+            "patterns": "i want brown watch",
+            "tag": "product_search"
+        },
+        {
+            "patterns": "brown",
+            "tag": "product_search"
+        },
+        {
+            "patterns": "grey",
+            "tag": "category_search"
+        },
+        {
+            "patterns": "shell",
+            "tag": "product_search"
+        },
+        {
+            "patterns": "show me shell necklace",
+            "tag": "product_search"
         }
     ]
 }

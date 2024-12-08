@@ -1,0 +1,191 @@
+{%extends 'main.html' %}
+{%load static%}
+{%block content%}
+
+<html>
+    <header>
+        <style>
+             * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
+    
+            html, body {
+                width: 100%;
+                height: 100%;
+                overflow-x: hidden; /* Prevent horizontal scrolling */
+            }
+    
+            /* Main Slider Container */
+            #slider {
+                position: relative;
+                width: 90vw; /* Fullscreen width */
+                height: 70vh;
+                overflow: hidden;
+            }
+    
+            /* Slider Animation */
+            #slider figure {
+                display: flex;
+                position: absolute;
+                width: 800%; /* For multiple images */
+                margin: 0;
+                left: 0;
+                top: 0;
+                animation: sliderAnimation 15s infinite;
+            }
+    
+            #slider figure img {
+                width: 90vw; /* Fullscreen width for each image */
+                height: 70vh;
+                object-fit: cover; /* Ensures image fits nicely */
+            }
+    
+            /* Text Overlay for Each Slide */
+            .overlay {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0, 0, 0, 0); /* Slight dark overlay */
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                color: white;
+                text-align: center;
+            }
+    
+            .overlay h1 {
+                font-size: 3rem;
+                margin-bottom: 10px;
+                color: white;
+            }
+    
+            .overlay h5 {
+                font-size: 1.5rem;
+                margin-bottom: 20px;
+                color: white;
+            }
+    
+            .overlay button {
+                background-color: #AB886D;
+                color: white;
+                border: 1px solid #54473F;
+                margin: 0 10px;
+                padding: 8px 16px;
+                border-radius: 5px;
+                font-weight: bold;
+                transition: background-color 0.3s ease;
+            }
+    
+            .overlay button:hover {
+                background-color: #54473F;
+                color: white;
+            }
+
+            .custom-aboutus{
+                width: 100%;
+                height: 530px;
+            }
+
+            /* table css */
+            table {
+            width: 50%;
+            border-collapse: collapse;
+            margin: 20px auto;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: center;
+        }
+        th {
+            background-color: #f4f4f4;
+            font-weight: bold;
+        }
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        </style>
+    </header>
+</html>
+
+
+<header class="py-5">
+    <div class="container" >
+            <div id="slider" style="height: 250px;">
+                <figure>
+                    <img src="{% static 'images/4.jpg' %}" alt="Image 1">
+                </figure>
+                <div class="overlay">
+                    <h1>Home>Checkout</h1>
+                </div>
+    </div>
+</header>
+
+
+<div class="container" style="margin-bottom: 20px;">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <div class="card">
+                <div class="card-header">
+                  Order Summary
+                </div>
+                <div class="card-body">
+                    {%for product in cart_products %}
+                        {{product.name}}:
+                        {%if product.is_sale%}
+                            Rs {{product.sale_price}}
+                        {%else%}
+                            Rs {{product.price}}
+                        {%endif%}
+                        <br>
+                        <small>Quantity
+                        {%for key,value in quantities.items %}
+                            {%if key == product.id|slugify%}
+                                {{value}}
+                            {%endif%}
+                        {%endfor%}</small>
+                </div>
+                
+                {%endfor%}
+              </div>
+              <div class="card-footer">
+                Total Price: Rs.{{totals}}
+            </div>
+              <br>
+              <a href="{%url 'cart_summary%'}" class="custom-login-button"> Update item</a>
+        </div>
+    </div>
+</div>
+
+<div class="container" style="margin-top: 40px;">
+    <div class="row" style="margin-bottom: 20px;">
+        <div class="col-md-8 offset-md-2">
+            <div class="card">
+                <div class="card-header">
+                    Shipping Informations
+                </div>
+                <div class="card-body">
+                    {{shipping_form.as_p}}
+                </div>
+        </div>
+        <br>
+<form method="POST" action="{% url 'initiate_payment' %}">
+    {% csrf_token %}
+    <input type="hidden" name="total_amount" value="{{ totals }}">
+    <button type="submit" class="custom-login-button">Proceed to Payment</button>
+</form>
+    </div>
+</div>
+
+
+</div>
+
+{%endblock content%}
+
+

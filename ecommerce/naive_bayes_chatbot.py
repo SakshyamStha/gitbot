@@ -270,19 +270,24 @@ def generate_response(user_input,request):
                 product = Product.objects.get(name__iexact=product_name.replace(" ", "_"))
                 product_id = str(product.id)
 
-                # Check current quantity of the product in the cart
-                current_quantity = cart.cart.get(product_id, 0)
+                if product_id in cart.cart:
+                    # Update existing product quantity
+                    new_quantity = quantity
 
-                # Calculate the new quantity
-                new_quantity = current_quantity + quantity
-
-                if new_quantity > 10:
-                    response += (
-                        f"Cannot add <strong>{quantity}</strong> more of <strong>{product.name.replace('_', ' ')}</strong>. "
-                        f"You already have <strong>{current_quantity}</strong>, and the maximum allowed is 10.<br>"
-                    )
+                    if new_quantity > 10:
+                        response += (
+                            f"Cannot update <strong>{product.name.replace('_', ' ')}</strong> to <strong>{new_quantity}</strong>. "
+                            f"The maximum allowed is 10.<br>"
+                        )
+                    else:
+                        cart.update(product=product_id, quantity=new_quantity)  # Update the quantity
+                        response += (
+                            f"Updated <strong>{product.name.replace('_', ' ')}</strong> to <strong>{new_quantity}</strong> in your cart.<br>"
+                            f"Click to <a href='/cart/'>view</a> your cart.<br>"
+                        )
                 else:
-                    cart.add(product=product, quantity=quantity)  # Add the specified quantity
+                    # Add product if it's not in the cart
+                    cart.add(product=product, quantity=quantity)
                     response += (
                         f"Successfully added <strong>{quantity} x {product.name.replace('_', ' ')}</strong> to your cart.<br>"
                         f"Click to <a href='/cart/'>view</a> your cart.<br>"
@@ -324,7 +329,7 @@ def extract_product_names(user_input):
     words = preprocess_text(user_input.lower())
     keywords = ["about", "product", "item", "is", "looking", "want", "want to buy", "show", "tell", "have", "details", "info", "buy",
                 "add", "put", "place", "remove", "clear", "discard", "delete"]
-    product_names = []
+    product_names = set()
 
     for keyword in keywords:
         if keyword in words:
@@ -337,51 +342,45 @@ def extract_product_names(user_input):
                 for i in range(len(extracted_words)):
                     potential_name = "_".join(extracted_words[:i + 1]).capitalize()
                     
-                    # Check against the actual product name
+                    # Check both actual and alternate product names
                     product = Product.objects.filter(name=potential_name).first()
                     if product:
-                        product_names.append(product.name)
+                        product_names.add(product.name)
                         break
                     
-                    # Check against alternate names
-                    products = Product.objects.all()
-                    for prod in products:
-                        alternate_names = prod.get_alternate_names()
-                        if potential_name.lower() in alternate_names:
-                            product_names.append(prod.name)
+                    for prod in Product.objects.all():
+                        if potential_name.lower() in prod.get_alternate_names():
+                            product_names.add(prod.name)
                             break
-
             break
 
-    # Fallback mechanism
+    # Fallback Mechanism
     if not product_names:
         fallback_name = "_".join(words).capitalize()
         product = Product.objects.filter(name=fallback_name).first()
         if product:
-            product_names.append(product.name)
+            product_names.add(product.name)
         else:
             # Use custom similarity to find close matches
-            products = Product.objects.all()
             suggestions = []
 
-            for prod in products:
-                # Check similarity with the actual name
+            for prod in Product.objects.all():
+                # Check similarity with actual and alternate names
                 similarity_score_name = string_similarity(fallback_name, prod.name)
                 if similarity_score_name > 0.8:
                     suggestions.append((prod.name, similarity_score_name))
 
-                # Check similarity with alternate names
-                alternate_names = prod.get_alternate_names()
-                for alt_name in alternate_names:
+                for alt_name in prod.get_alternate_names():
                     similarity_score_alt = string_similarity(fallback_name, alt_name)
                     if similarity_score_alt > 0.8:
                         suggestions.append((prod.name, similarity_score_alt))
 
             # Sort suggestions by similarity score and pick the top matches
             suggestions = sorted(suggestions, key=lambda x: x[1], reverse=True)[:3]
-            product_names = [suggestion[0] for suggestion in suggestions]
+            product_names.update([suggestion[0] for suggestion in suggestions])
 
-    return product_names if product_names else [user_input.strip().replace(" ", "_").capitalize()]
+    return list(product_names) if product_names else [user_input.strip().replace(" ", "_").capitalize()]
+
 
 
 

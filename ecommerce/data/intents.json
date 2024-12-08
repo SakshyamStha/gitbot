@@ -6,6 +6,8 @@
         "patterns": [
           "Hello",
           "yo",
+          "gleam-bot",
+          "gleam",
           "Hi",
           "Hey",
           "Good morning",

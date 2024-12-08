@@ -6,8 +6,11 @@ from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
 from django import forms
 from .forms import SignUpForm,UpdateUserForm,ChangePasswordForm,UserInfoForm
+from payment.forms import ShippingForm
+from payment.models import ShippingAddress
 from django.core.paginator import Paginator
-
+import json
+from cart.cart import Cart
 
 def home(request):
     # Fetch all sale products
@@ -28,12 +31,16 @@ def contact(request):
 def allproduct(request):
     query = request.GET.get('q', '')  
     products = Product.objects.all()  # Fetch all products initially
-    categories=Category.objects.all()
+    categories = Category.objects.all()
+    no_products_found = False  # Flag to track if no products are found
 
     if query:
-
         search_query = query.replace(' ', '_')
         products = products.filter(name__icontains=search_query) | products.filter(category__name__iexact=query)
+
+    # Check if any products are available after filtering
+    if not products.exists():
+        no_products_found = True
 
     # Add pagination
     paginator = Paginator(products, 4) 
@@ -41,10 +48,11 @@ def allproduct(request):
     page_obj = paginator.get_page(page_number)
 
     context = {
-        'categories':categories,
-        'products':products,
+        'categories': categories,
+        'products': products,
         'page_obj': page_obj,
         'original_query': query,  # Pass the search query back to the template
+        'no_products_found': no_products_found,  # Include the flag in the context
     }
     return render(request, 'allproduct.html', context)
 
@@ -69,6 +77,24 @@ def login_user(request):
         user = authenticate(request, username=username, password=password)
         if user is not None:
             login(request, user)
+
+            #Do some shopping cart stuff
+            current_user=Profile.objects.get(user__id=request.user.id)
+
+            #get their saved cart from database
+            saved_cart=current_user.old_cart
+            
+            #convert database string to python dictionary
+            if saved_cart:
+                #convert to dictionary using JSON
+                converted_cart=json.loads(saved_cart)
+                #add the loaded cart dictionary to our session
+                #get the cart
+                cart=Cart(request)
+                #loop through the cart and add items from the database
+                for key,value in converted_cart.items():
+                    cart.db_add(product=key,quantity=value)
+
             messages.success(request, "You have logged in successfully!")
             return redirect('home')
         else:
@@ -98,7 +124,7 @@ def register_user(request):
             user = authenticate(username=username, password=password)
             login(request, user)
             messages.success(request, "You have registered successfully!")
-            return redirect('home')
+            return redirect('update_info')
         else:
             for field, errors in form.errors.items():
                 for error in errors:
@@ -179,18 +205,26 @@ def update_password(request):
 
 def update_info(request):
     if request.user.is_authenticated:
+        #get currnet user
         current_user=Profile.objects.get(user__id=request.user.id)
+        #get current users shipping info
+        shipping_user=ShippingAddress.objects.get(user__id=request.user.id)
+        #get original user form
         form= UserInfoForm(request.POST or None, instance=current_user)
+        #get users shipping form
+        shipping_form=ShippingForm(request.POST or None, instance=shipping_user)
 
-        if form.is_valid():
+        if form.is_valid() or shipping_form.is_valid():
+            #save original form
             form.save()
- 
+            #save shipping form
+            shipping_form.save()
             messages.success(request,"Your informations has been updated!!!")
             return redirect('home')
         else:
             for error in list(form.errors.values()):
                     messages.error(request,error)
-        return render(request,"update_info.html",{'form':form})
+        return render(request,"update_info.html",{'form':form,'shipping_form':shipping_form})
     else:
         messages.success(request,"User must be logged in")
         return redirect('home')
